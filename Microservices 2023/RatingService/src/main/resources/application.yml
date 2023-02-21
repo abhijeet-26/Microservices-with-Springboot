@@ -1,0 +1,32 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/microservice?serverTimezone=UTC
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: root
+  application:    name: RATING-SERVICE
+    
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL94Dialect
+        
+  config:    import: "optional:configserver: http://localhost:8085"
+  
+  
+okta:  oauth2:    issuer: https://dev-83733037.okta.com/oauth2/default
+    audience: api://default
+    
+#eureka:#  instance:#    prefer-ip-address: true
+#  client:#    fetch-registry: true
+#    register-with-eureka: true
+#    service-url:#      defaultZone: http://localhost:8761/eureka
+    
+  
+
+      

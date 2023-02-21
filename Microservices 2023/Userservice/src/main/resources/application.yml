@@ -1,0 +1,67 @@
+server:
+  port: 8081
+
+spring:  datasource:    url: jdbc:postgresql://localhost:5432/microservice?serverTimezone=UTC
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: root
+      jpa:
+    hibernate:      ddl-auto: update
+    properties:      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQL94Dialect
+    
+  application:    name: USER-SERVICE  
+    
+  config:    import: "optional:configserver: http://localhost:8085"
+    
+  security:    oauth2:      resourceserver:        jwt:          issuer-uri: https://dev-83733037.okta.com/oauth2/default
+      client:        registration:          my-internal-client:
+            provider: okta
+            authorization-grant-type: client_credential
+            scope: Internal
+            client-id: 0oa8eq42itjtHPo7T5d7
+            client-secret: DHYYfeQBLrGoWALcRkXqS-kofGBfsgBX5C919PSC
+            
+        provider:          okta:
+            issuer-uri: https://dev-83733037.okta.com/oauth2/default
+        
+    
+
+management:  health:    circuitbreakers:      enabled: true
+  endpoints:    web:      exposure:        include: health
+        
+  endpoint:    health:      show-details: always
+   
+   
+resilience4j:  circuitbreaker:    instances:      ratingHotelBreaker:
+        register-health-indicator: true
+        event-consumer-buffer-size: 10
+        failure-rate-threshold: 50
+        minimum-number-of-calls: 5
+        automatic-transition-from-open-to-half-open-enabled: true
+        wait-duration-in-open-state: 6s
+        permitted-number-of-calls-in-half-open-state: 3
+        sliding-window-size: 10
+        sliding-window-type: count-based
+    
+  retry:    instances:      ratingHotelService:
+        max-attempts: 3
+        wait-duration: 5s
+        
+        
+  ratelimiter:    instances:      userRateLimiter:
+        timeout-duration: 2s
+        limit-refresh-period: 4s
+        limit-for-period: 2
+        
+        
+okta:  oauth2:    issuer: https://dev-83733037.okta.com/oauth2/default
+    audience: api://default
+ 
+ 
+ 
+    
+    
+#eureka:#  instance:#    prefer-ip-address: true
+#  client:#    fetch-registry: true
+#    register-with-eureka: true#    service-url:#      defaultZone: http://localhost:8761/eureka
